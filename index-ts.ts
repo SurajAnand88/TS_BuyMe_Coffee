@@ -15,6 +15,7 @@ let fundBtn = document.getElementById("fundButton") as HTMLButtonElement;
 let ethAmountInput = document.getElementById("ethAmountInput") as HTMLInputElement;
 let getBalanceBtn = document.getElementById("getBalanceButton") as HTMLButtonElement;
 let withDrawBtn = document.getElementById("withdrawButton") as HTMLButtonElement;
+let addressToAmountBtn = document.getElementById("addressToAmount") as HTMLButtonElement;
 
 let walletClient: createWalletClient;
 let publicClient: createPublicClient;
@@ -117,8 +118,32 @@ async function withdraw(): Promise<void>{
 
     let hash:string  = await walletClient.writeContract(request);
     console.log(hash);
-
     
+  }
+}
+
+
+async function getAddressToAmountFunded(): Promise<void>{
+  if(window.ethereum){
+
+    walletClient = createWalletClient({
+      transport: custom(window.ethereum)
+    })
+
+    let [connectedAccount] = await walletClient.requestAddresses();
+
+    publicClient = createPublicClient({
+      transport:custom(window.ethereum)
+    })
+
+    let amount = await publicClient.readContract({
+      address:contractAddress,
+      abi,
+      functionName:"getAddressToAmountFunded",
+      args:[connectedAccount]
+    })
+
+    console.log(amount)
   }
 }
 
@@ -126,3 +151,4 @@ connectBtn.onclick = connect;
 fundBtn.onclick = fund;
 getBalanceBtn.onclick = getBalance;
 withDrawBtn.onclick = withdraw;
+addressToAmountBtn.onclick = getAddressToAmountFunded;
