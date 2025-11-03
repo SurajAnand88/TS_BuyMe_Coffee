@@ -54,8 +54,9 @@ async function fund(): Promise<void> {
       value: parseEther(ethAmountInput.value),
     });
 
-    // let hash = await walletClient.writeContract(request);
-    // console.log(hash);
+    console.log(request)
+    let hash = await walletClient.writeContract(request);
+    console.log(hash);
   }
 }
 
@@ -66,7 +67,7 @@ async function getBalance(): Promise<void> {
       transport: custom(window.ethereum),
     });
 
-    let balance: bigint = await publicClient.getBalance({
+    let balance:bigint = await publicClient.getBalance({
       address: contractAddress,
     });
     console.log(formatEther(balance));
@@ -92,8 +93,34 @@ async function getCurrentChain(client: createWalletClient): Promise<object> {
   return currentChain;
 }
 
-function withdraw(){
-  console.log("withdrawing.........");
+async function withdraw(): Promise<void>{
+  if(window.ethereum){
+    
+    walletClient = createWalletClient({
+      transport: custom(window.ethereum)
+    })
+
+    let [connectedAccount] = await walletClient.requestAddresses();
+    let currentChain = await getCurrentChain(walletClient);
+
+    publicClient = createPublicClient({
+      transport: custom(window.ethereum)
+    })
+
+    let {request } = await publicClient.simulateContract({
+      address:contractAddress,
+      abi,
+      functionName:"withdraw",
+      account: connectedAccount,
+      chain:currentChain
+    })
+
+    console.log(request);
+    // let hash:string  = await walletClient.writeContract(request);
+    // console.log(hash);
+
+    
+  }
 }
 
 connectBtn.onclick = connect;
