@@ -115,9 +115,8 @@ async function withdraw(): Promise<void>{
       chain:currentChain
     })
 
-    console.log(request);
-    // let hash:string  = await walletClient.writeContract(request);
-    // console.log(hash);
+    let hash:string  = await walletClient.writeContract(request);
+    console.log(hash);
 
     
   }
